@@ -4,7 +4,6 @@ Projeto realizado em grupo para a disciplina de Bancos de Dados durante a Resid�
 Desenvolvido pelos discentes: Davi Portugal, Guilherme Sena, Laís Ferrari do Amaral, Mariana Alves de Oliveira, Matheus da Silveira Santos.
 
 
-
 # Sistema de Gestão Hospitalar
 
 ## Descrição
@@ -13,6 +12,7 @@ Inclui auditoria de desligamentos e relatórios prontos via views, garantindo ra
 
 ---
 ## Estrutura
+```
 sistema-hospitalar/
   │
   ├── README.md              # Documentação completa do projeto
@@ -22,7 +22,7 @@ sistema-hospitalar/
   ├── users.sql              # Criação de usuários e permissões
   ├── auditoria.sql          # Histórico de médicos e enfermeiras + triggers de auditoria
   └── exemplos_consultas.sql # Consultas práticas para demonstração
-
+```
 ### Enums
 - `enum_turno` → turnos de trabalho  
 - `tipo_ala` → tipos de ala hospitalar  
