@@ -9,14 +9,14 @@ Inclui auditoria de desligamentos e relatórios prontos via views, garantindo ra
 ---
 ## Estrutura
 sistema-hospitalar/
-│
-├── README.md              # Documentação completa do projeto
-├── schema.sql             # Criação de enums, tabelas, índices, constraints e triggers
-├── inserts.sql            # Dados iniciais (DML) para popular o banco
-├── views.sql              # Criação de todas as views analíticas e operacionais
-├── users.sql              # Criação de usuários e permissões
-├── auditoria.sql          # Histórico de médicos e enfermeiras + triggers de auditoria
-└── exemplos_consultas.sql # Consultas práticas para demonstração
+  │
+  ├── README.md              # Documentação completa do projeto
+  ├── schema.sql             # Criação de enums, tabelas, índices, constraints e triggers
+  ├── inserts.sql            # Dados iniciais (DML) para popular o banco
+  ├── views.sql              # Criação de todas as views analíticas e operacionais
+  ├── users.sql              # Criação de usuários e permissões
+  ├── auditoria.sql          # Histórico de médicos e enfermeiras + triggers de auditoria
+  └── exemplos_consultas.sql # Consultas práticas para demonstração
 
 ### Enums
 - `enum_turno` → turnos de trabalho  
