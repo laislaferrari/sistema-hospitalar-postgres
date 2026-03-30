@@ -1,5 +1,10 @@
 # sistema-hospitalar-postgres
 Banco de dados relacional em PostgreSQL para gestão hospitalar, incluindo pacientes, médicos, enfermeiras, internações, exames, prescrições, faturamento e pesquisas de satisfação.
+Projeto realizado em grupo para a disciplina de Bancos de Dados durante a Residência em TIC/Software do Serratec.
+Desenvolvido pelos discentes: Davi Portugal, Guilherme Sena, Laís Ferrari do Amaral, Mariana Alves de Oliveira, Matheus da Silveira Santos.
+
+
+
 # Sistema de Gestão Hospitalar
 
 ## Descrição
