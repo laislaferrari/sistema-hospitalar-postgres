@@ -88,7 +88,6 @@ sistema-hospitalar/
 - **Admin (`admin_hospital`)** → acesso total  
 - **Médico (`arnaldo_rocha`)** → atendimentos e prescrições  
 - **Recepcionista (`recepcionista`)** → pacientes e internações  
-- **Paciente** → acesso restrito a seus próprios dados  
 
 ---
 
