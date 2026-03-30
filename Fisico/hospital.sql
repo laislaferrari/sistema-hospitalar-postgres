@@ -1,4 +1,3 @@
-
 -- Cria o banco de dados hospital_db
 create database hospital_db;
 
@@ -39,7 +38,6 @@ drop type if exists tipo_leito;
 drop type if exists status_exame;
 
 -- CRIAÇÃO DE ENUMS
-
 -- Turnos de trabalho
 create type enum_turno as enum ('manha', 'tarde', 'noite');
 
@@ -74,15 +72,12 @@ create type tipo_pagamento as enum ('dinheiro', 'cartao', 'boleto', 'transferenc
 create type perfil_usuario as enum ('admin', 'medico', 'enfermeira', 'paciente');
 
 --Tipos de leitos
-
 create type tipo_leito as enum ('pos-cirurgico', 'semi-intensivo', 'quimioterapia', 'isolamento', 'bercario', 'cirurgico', 'monitorado', 'infantil');
 
 -- Status exames:
-
 create type status_exame as enum ('concluido', 'pendente', 'em processamento');
 
---DDL - criacao de Tabelas:
-
+--DDL criacao de Tabelas:
 -- tabela dos hospitais cadastrados
 create table hospital (
     id_hospital serial primary key,
@@ -93,25 +88,20 @@ create table hospital (
     endereco varchar(255)
 );
 
-select * from hospital;
-
-
 -- tabela das alas dos hospitais
 create table ala (
     id_ala serial primary key,
     id_hospital int not null references hospital(id_hospital)
-    	on update cascade
-    	on delete cascade,
+	    on update cascade
+	    on delete cascade,
     nome varchar(100) not null,
     tipo tipo_ala not null,
     numero_leitos integer not null check (numero_leitos > 0), 
     id_enfermeira_responsavel int,
     andar int,
     capacidade_maxima int check (capacidade_maxima > 0),
-    constraint unique_nomesala_hospital unique (id_hospital, nome)  -- Nome de ala único por hospital
+    constraint unique_nomesala_hospital unique (id_hospital, nome)
 );
-
-select * from ala;
 
 -- tabela dos planos de saúde cadastrados
 create table plano_saude (
@@ -124,17 +114,17 @@ create table plano_saude (
 );
 
 -- relaciona hospitais com planos de saúde credenciados
-create table hospital_plano (      --tabela credenciamento                                            
+create table hospital_plano (                                           
     id_hospital_plano serial primary key,
     id_hospital int not null references hospital(id_hospital)
-    	on update cascade
-    	on delete cascade,
+        on update cascade
+        on delete cascade,
     id_plano_saude int not null references plano_saude(id_plano_saude)
-    	on update cascade
-    	on delete cascade,    
+        on update cascade
+        on delete cascade, 
     data_credenciamento date not null,
     status varchar(30) default 'ativo',
-    constraint unique_plano_hospital unique (id_hospital, id_plano_saude) -- Evita repetição de credenciamento
+    constraint unique_plano_hospital unique (id_hospital, id_plano_saude)
 );
 
 -- tabela dos pacientes cadastrados
@@ -150,10 +140,10 @@ create table paciente (
     endereco varchar(200),
     nome_mae varchar(100),
     contato_emergencia varchar(100),
-    tipo_sanguineo varchar(3), --se der tempo criar enum
+    tipo_sanguineo varchar(3), 
     id_plano_saude integer references plano_saude(id_plano_saude)
-    	on update cascade
-   		on delete set null,
+        on update cascade
+        on delete set null,
     alergias text,
     observacao text
 );
@@ -166,11 +156,11 @@ create table enfermeira (
     cre varchar(15) not null unique, 
     turno enum_turno not null,
     id_ala integer references ala(id_ala) 
-    	on update cascade
-    	on delete no action,
-    id_enfermeira_chefe integer references enfermeira(id_enfermeira)
-    	on update cascade
-    	on delete no action,
+        on update cascade 
+        on delete no action,
+    id_enfermeira_chefe integer references enfermeira(id_enfermeira) 
+        on update cascade 
+        on delete no action,
     telefone varchar(20),
     email varchar(100),
     data_admissao date not null default current_date,
@@ -197,32 +187,32 @@ create table medico (
 create table leito (
     id_leito serial primary key,
     id_ala integer not null references ala(id_ala)
-   		on update cascade
-   		on delete cascade,
+	    on update cascade
+	    on delete cascade,
     codigo_leito varchar(20) not null,       
     status status_leito,
     observacao text,
     tipo_leito tipo_leito,
-    constraint unique_codigo_leito_ala unique (id_ala, id_leito) -- Não pode repetir código na ala
+    constraint unique_codigo_leito_ala unique (id_ala, id_leito)
 );
 
 -- tabela de atendimentos realizados
 create table atendimento (
     id_atendimento serial primary key,
     id_paciente integer not null references paciente(id_paciente)
-    	on update cascade
-    	on delete cascade,
+	    on update cascade
+	    on delete cascade,
     id_medico integer not null references medico(id_medico)
-    	on update cascade
-    	on delete cascade,
+	    on update cascade
+	    on delete cascade,
     data_atendimento date not null,
     hora_atendimento time not null,
     tipo tipo_atendimento not null,
     status status_atendimento not null,
     observacoes text,
     id_leito integer references leito(id_leito)
-    	on update cascade
-    	on delete no action,
+    on update cascade
+    on delete no action,
     prioridade integer check (prioridade between 1 and 5)
 );
 
@@ -242,12 +232,12 @@ create table medicamento (
 create table prescricao_medicamento (
     id_prescricao_medicamento serial primary key,
     id_atendimento integer not null references atendimento(id_atendimento)
-    	on update cascade
-    	on delete cascade,
+	    on update cascade
+	    on delete cascade,
     id_medico integer not null references medico(id_medico),
     id_medicamento integer not null references medicamento(id_medicamento)
-    	on update cascade
-    	on delete cascade,
+	    on update cascade
+	    on delete cascade,
     data_prescricao timestamp not null,
     dosagem varchar(60) not null,
     instrucoes text,
@@ -269,14 +259,14 @@ create table laboratorio (
 create table exame (
     id_exame serial primary key,
     id_paciente integer not null references paciente(id_paciente)
-    	on update cascade
-    	on delete no action,
+	    on update cascade
+	    on delete no action,
     id_medico_solicitante integer not null references medico(id_medico)
-    	on update cascade
-    	on delete no action,
+	    on update cascade
+	    on delete no action,
     id_laboratorio integer not null references laboratorio(id_laboratorio)
-   		on update cascade
-    	on delete no action,
+	    on update cascade
+	    on delete no action,
     tipo tipo_exame not null,
     data_solicitacao timestamp not null,
     data_resultado timestamp,
@@ -284,6 +274,9 @@ create table exame (
     custo numeric(10,2) not null check (custo >= 0),
     resultado resultado_exame,
     arquivo_laudo bytea,  -- Suporta arquivos de ~1MB com ótima performance
+    arquivo_nome varchar (),
+    arquivo_tipo varchar (),
+    arquivo_tamanho_bytes integer,
     observacao text,
     urgencia boolean default false,
     status status_exame default 'pendente'
@@ -299,11 +292,11 @@ comment on column exame.arquivo_laudo is 'armazena o binário do laudo (pdf/imag
 create table internacao (
     id_internacao serial primary key,
     id_paciente integer not null references paciente(id_paciente)
-    	on update cascade
-    	on delete cascade,
+	    on update cascade
+	    on delete cascade,
     id_leito integer not null references leito(id_leito)
-    	on update cascade
-    	on delete cascade,
+	    on update cascade
+	    on delete cascade,
     data_entrada timestamp not null,
     data_saida timestamp,
     motivo text,
@@ -315,11 +308,11 @@ create table internacao (
 create table paciente_medico (
     id_paciente_medico serial primary key,
     id_paciente integer not null references paciente(id_paciente)
-    	on update cascade
-    	on delete no action,
+	    on update cascade
+	    on delete no action,
     id_medico integer not null references medico(id_medico)
-    	on update cascade
-    	on delete no action,
+	    on update cascade
+	    on delete no action,
     data_inicio_relacionamento date not null default current_date,
     data_fim_relacionamento date,
     constraint unique_paciente_medico unique(id_paciente, id_medico, data_inicio_relacionamento)
@@ -329,20 +322,20 @@ create table paciente_medico (
 create table fatura (
     id_fatura serial primary key,
     id_paciente integer not null references paciente(id_paciente)
-    	on update cascade
-    	on delete no action,
+	    on update cascade
+	    on delete no action,
     id_plano_saude integer not null references plano_saude(id_plano_saude)
-    	on update cascade
-    	on delete no action,
+	    on update cascade
+	    on delete no action,
     id_atendimento integer references atendimento(id_atendimento)
-    	on update cascade
-    	on delete no action,
+	    on update cascade
+	    on delete no action,
     id_exame integer references exame(id_exame)
-    	on update cascade
-    	on delete no action,
+	    on update cascade
+	    on delete no action,
     id_internacao integer references internacao(id_internacao)
-    	on update cascade
-    	on delete no action,
+	    on update cascade
+	    on delete no action,
     valor numeric(12,2) not null check (valor >= 0),
     status status_fatura not null,
     forma_pagamento tipo_pagamento,
@@ -358,8 +351,8 @@ create table fatura (
 create table pesquisa_satisfacao (
     id_satisfacao serial primary key,
     id_atendimento integer not null references atendimento(id_atendimento)
-    	on update cascade
-    	on delete no action,
+	    on update cascade
+	    on delete no action,
     data_resposta date not null,
     nota_geral integer check (nota_geral between 1 and 5),
     comentario text,
@@ -386,8 +379,6 @@ create unique index idx_unica_internacao_ativa on internacao(id_paciente) where 
 
 -- TRIGGERS E FUNÇÕES DE NEGÓCIO 
 -- trigger: após prescrição de medicamento, decrementa o estoque automaticamente
-
-drop trigger if exists decrementa_estoque_medicamento on medicamento cascade;
 create or replace function decrementa_estoque_medicamento()
 returns trigger as $$
 begin
@@ -436,7 +427,6 @@ after update of data_saida on internacao
 for each row execute function libera_leito_internacao();
 
 -- trigger: impede exclusão de paciente com movimentação em atendimento, internacao, exame ou fatura em aberto
-
 create or replace function impede_remocao_paciente()
 returns trigger as $$
 begin
@@ -516,7 +506,6 @@ select * from vw_todos_medicos;
 select * from vw_total_faturado_atendimento;
 
 --DML - DADOS INICIAIS (INSERTS)
-
 -- Hospital
 insert into hospital (nome, cnpj, inscricao_estadual, data_fundacao, endereco) values
 	('Hospital Albert Einstein', '60.765.823/0001-30', '110.123.456.111', '1955-06-04', 'Av. Albert Einstein, 627, Morumbi, São Paulo - SP'),
@@ -605,8 +594,6 @@ insert into medicamento (nome, laboratorio_fabricante, principio_ativo, tarja, t
 	('Adrenalina', 'Hipolabor', 'Epinefrina', 'Vermelha', 'Injetável', 20, 'Uso em emergências e paradas cardiorrespiratórias.'),
 	('Cloreto de Sódio 0,9%', 'JP Farma', 'Soro Fisiológico', 'Livre', 'Intravenosa', 1000, 'Solução para hidratação e diluição de medicamentos.');
 
-
-drop table medicamento cascade;
 select * from medicamento m;
 
 -- Laboratórios
@@ -764,7 +751,6 @@ insert into internacao (id_paciente, id_leito, data_entrada, data_saida, motivo,
 
 select * from internacao i;
 
-
 -- Prescrição de Medicamento
 insert into prescricao_medicamento (id_atendimento, id_medico, id_medicamento, data_prescricao, dosagem, quantidade, instrucoes) values
 	(1, 1, 1, '2026-03-01', '500mg', 1, 'Tomar se houver dor ou febre.'),
@@ -780,7 +766,6 @@ insert into prescricao_medicamento (id_atendimento, id_medico, id_medicamento, d
 	(12, 3, 1, '2026-03-06', '500mg', 10, 'Uso conforme necessidade para dor.');
 
 select * from prescricao_medicamento;
-
 
 -- Fatura
 insert into fatura (id_paciente, id_plano_saude, id_atendimento, id_exame, id_internacao, valor, status, forma_pagamento, data_emissao, data_vencimento, data_pagamento, desconto_aplicado, numero_nf) values
@@ -873,7 +858,6 @@ insert into paciente_medico (id_paciente, id_medico, data_inicio_relacionamento,
 select * from paciente_medico pm;
 
 -- Um comando SQL de atualização em algum registro em uma tabela (DML)
-
 update medicamento set quantidade_estoque = 100 where id_medicamento = 3;  
 
 select nome, quantidade_estoque from medicamento where id_medicamento = 3;
@@ -885,7 +869,6 @@ select nome_completo, telefone from paciente where id_paciente = 2;
 -- Um comando SQL de exclusão de algum registro em uma tabela (DML)
 --mas antes vamos criar uma trigger para automatizar a data de demissao quando um id de enfermeira for excluido:
 --por motivos de auditorias e registros internos, criamos uma tabela para o historico das enfermeiras:
-
 drop table if exists historico_enfermeira;
 
 create table historico_enfermeira (
@@ -917,8 +900,8 @@ delete from enfermeira where id_enfermeira = 4;
 
 --verificando a exclusão da enfermeira;
 select * from enfermeira e;
---verificando se a tabela do historico foi atualizada com a data de demissao atual:
 
+--verificando se a tabela do historico foi atualizada com a data de demissao atual:
 select * from historico_enfermeira;
 
 --como não faz mais sentido ter na tabela principal de enfermeiras a linha "data_demissao", vamos exclui-la e criar uma view para visializar TODAS as enfermeiras que passaram pelo sistema:
@@ -926,15 +909,24 @@ alter table enfermeira drop column data_demissao;
 
 --criar um view para ver todas a enfermeiras:
 create or replace view vw_todas_enfermeiras as
-select e.id_enfermeira, e.nome_completo, e.cre, null::date as data_demissao from enfermeira e 
+select 
+    e.id_enfermeira,
+    e.nome_completo,
+    e.cre,
+    null::date as data_demissao
+from enfermeira e
 union
-select h.id_enfermeira, h.nome_completo, h.cre, h.data_demissaof from historico_enfermeira h;
+select 
+    h.id_enfermeira,
+    h.nome_completo,
+    h.cre,
+    h.data_demissao
+from historico_enfermeira h;
 
 --visualizar a view:
 select * from vw_todas_enfermeiras;
 
 -- decidimos aplicar também na tabela médicos:
-
 drop table if exists historico_medico;
 
 create table historico_medico (
@@ -978,8 +970,12 @@ alter table medico drop column data_demissao;
 --criar um view para ver todos os medicos ja cadastrados no sistema:
 create or replace view vw_todos_medicos as
 select m.id_medico, m.nome_completo, m.crm,
-null::date as data_demissao from medico m
-union select hm.id_medico, hm.nome_completo, hm.crm, hm.data_demissao from historico_medico hm;
+    null::date as data_demissao
+from medico m
+union
+select 
+    hm.id_medico, hm.nome_completo, hm.crm, hm.data_demissao
+from historico_medico hm;
 
 --visualizar a view:
 select * from vw_todos_medicos;
@@ -987,11 +983,13 @@ select * from vw_todos_medicos;
 
 -- Consultas Leitos e Alas
 --view select:
-
 drop view if exists vw_leitos_alas;
 
 create or replace view vw_leitos_alas as
-select h.nome as hospital, a.nome as ala, l.id_leito, l.codigo_leito, l.status, l.tipo_leito, l.observacao from leito l
+select
+	h.nome as hospital, a.nome as ala,
+    l.id_leito, l.codigo_leito, l.status, l.tipo_leito, l.observacao
+from leito l
 join ala a on l.id_ala = a.id_ala
 join hospital h on a.id_hospital = h.id_hospital
 order by h.nome, a.nome, l.id_leito;
@@ -1000,12 +998,10 @@ order by h.nome, a.nome, l.id_leito;
 select * from vw_leitos_alas;
 
 -- Quais são os nomes e telefones de todos os médicos da especialidade “Cardiologia”?
-
 select nome_completo, telefone from medico 
 where especialidade = 'Cardiologia';
 
 -- Liste o nome e o CPF de todos os pacientes que possuem o plano de saúde “Unimed”.
-
 select p.nome_completo, p.cpf from paciente p
 join plano_saude ps on p.id_plano_saude = ps.id_plano_saude
 where ps.nome ilike 'Unimed';
@@ -1013,7 +1009,12 @@ where ps.nome ilike 'Unimed';
 -- Quais exames ainda não têm resultado (data_resultado IS NULL) e foram solicitados no mês atual?
 --View do select:
 create or replace view vw_resultado_pendente as
-select e.id_exame, p.nome_completo as paciente, e.tipo, e.data_solicitacao, e.status, e.urgencia from exame e
+select 
+    e.id_exame,
+    p.nome_completo as paciente,
+    e.tipo as tipo_exame,
+    e.data_solicitacao, e.status, e.urgencia
+from exame e
 join paciente p on e.id_paciente = p.id_paciente
 where e.data_resultado is null;
 
@@ -1022,7 +1023,9 @@ select * from vw_resultado_pendente;
 
 -- Quantidade de exames por laboratório.
 create or replace view vw_qtd_exame_lab as
-select l.nome as laboratorio, count(e.id_exame) as quantidade_exames
+select 
+    l.nome as laboratorio,
+    count(e.id_exame) as quantidade_exames
 from exame e
 join laboratorio l on e.id_laboratorio = l.id_laboratorio
 group by l.nome
@@ -1031,9 +1034,10 @@ order by quantidade_exames desc;
 select * from vw_qtd_exame_lab;
 
 -- Liste o nome do paciente, o número do leito e a data de entrada para todas as internações ativas (data_saida IS NULL).
-
 create or replace view vw_internacoes_ativas as
-select l.id_leito, p.nome_completo as nome_paciente, l.codigo_leito, i.data_entrada from internacao i
+select
+	l.id_leito, p.nome_completo as nome_paciente,
+    l.codigo_leito, i.data_entrada from internacao i
 join paciente p on i.id_paciente = p.id_paciente
 join leito l on i.id_leito = l.id_leito
 where i.data_saida is null;
@@ -1048,7 +1052,6 @@ where date_trunc('month', a.data_atendimento) = date_trunc('month', current_date
 group by m.nome_completo;
 
 --como a consulta não obteve resultados, vamos fazer alguns inserts que atendam o que foi pedido para que tenhamos dados na pesquisa:
-
 insert into atendimento (id_paciente, id_medico, data_atendimento, hora_atendimento, tipo, status, observacoes, prioridade) values
 (1, 2, '2026-02-05', '10:30:00', 'consulta', 'realizado', 'paciente apresentou sintomas leves.', 3),
 (2, 3, '2026-02-12', '14:00:00', 'emergencia', 'realizado', 'paciente chegou com dor intensa.', 5),
@@ -1057,13 +1060,12 @@ insert into atendimento (id_paciente, id_medico, data_atendimento, hora_atendime
 
 
 -- agora a verificação da view com a consulta já criada:
-
 select * from vw_consultas_ultimo_mes;
 
 -- Top 10 médicos com maior número de atendimentos?
-
 create or replace view vw_medicos_maior_atendimento as
-select m.nome_completo, count(a.id_atendimento) as total from atendimento a
+select m.nome_completo, count(a.id_atendimento) as total
+from atendimento a
 join medico m on a.id_medico = m.id_medico 
 group by m.nome_completo 
 order by total desc
@@ -1074,19 +1076,23 @@ select * from vw_medicos_maior_atendimento;
 
 -- Qual a porcentagem de leitos ocupados em cada ala? Apresente o nome da ala e a porcentagem.
 create or replace view vw_ocupacao_leitos as
-select h.nome as hospital, a.nome as ala, a.tipo, (count(*) filter (where l.status = 'ocupado') * 100.0 / count(*)) as porcentagem_ocupacao from ala a
+select h.nome as hospital, a.nome as ala, a.tipo,
+    (count(*) filter (where l.status = 'ocupado') * 100.0 / count(*)) as porcentagem_ocupacao
+from ala a
 join hospital h on a.id_hospital = h.id_hospital
 join leito l on l.id_ala = a.id_ala
 group by h.nome, a.nome, a.tipo
 order by porcentagem_ocupacao asc;
-
 
 --visualizacao da view criada com os resultados da porcentagem de leitos ocupados:
 select * from vw_ocupacao_leitos;
 
 -- Qual o valor total faturado para cada plano de saúde no ano de 2026? Apresente o nome do plano e o valor total.
 create or replace view vw_faturamento_plano_2026 as
-select ps.nome as plano_saude, coalesce(sum(f.valor), 0) as valor_total_faturado from plano_saude ps
+select 
+    ps.nome as plano_saude,
+    coalesce(sum(f.valor), 0) as valor_total_faturado
+from plano_saude ps
 left join fatura f on ps.id_plano_saude = f.id_plano_saude
 where extract(year from f.data_emissao) = 2026
 group by ps.id_plano_saude, ps.nome
@@ -1096,16 +1102,20 @@ order by valor_total_faturado desc;
 select * from vw_faturamento_plano_2026;
 
 -- Quais são os dois medicamentos mais prescritos no hospital? Apresente o nome do medicamento e a quantidade de prescrições.
-
-select m.nome as medicamento, count(pm.id_medicamento) as quantidade_prescricoes from medicamento m
+select 
+    m.nome as medicamento,
+    count(pm.id_medicamento) as quantidade_prescricoes
+from medicamento m
 left join prescricao_medicamento pm on m.id_medicamento = pm.id_medicamento
 group by m.id_medicamento, m.nome
 order by quantidade_prescricoes desc limit 2;
 
 -- Liste o nome do médico, a especialidade e a quantidade de pacientes atendidos por cada médico.
-
 create or replace view vw_qtd_paciente_medico as
-select  m.nome_completo as medico, m.especialidade, count(distinct a.id_paciente) as quant_pacientes_atendidos from medico m
+select
+    m.nome_completo as medico, m.especialidade,
+    count(distinct a.id_paciente) as quant_pacientes_atendidos -- adicionamos o distic pq estava contando o mesmo paciente mais de 1 vez
+from medico m
 left join atendimento a on m.id_medico = a.id_medico
 group by m.id_medico, m.nome_completo, m.especialidade
 order by quant_pacientes_atendidos desc, m.nome_completo;
@@ -1113,17 +1123,16 @@ order by quant_pacientes_atendidos desc, m.nome_completo;
 select * from vw_qtd_paciente_medico;
 
 -- Quais leitos estão ocupados há mais de 15 dias? Apresente o número do leito, o nome do paciente e a data de entrada
-
-select l.id_leito, l.codigo_leito, p.nome_completo as paciente, i.data_entrada from internacao i
+select l.id_leito, l.codigo_leito, p.nome_completo as paciente, i.data_entrada
+from internacao i
 join leito l on i.id_leito = l.id_leito
 join paciente p on i.id_paciente = p.id_paciente
 where i.data_saida is null and extract(day from age(current_date, i.data_entrada)) > 15;
 
 -- Qual o valor total faturado por tipo de atendimento (consulta, exame, internação)
-
 create or replace view vw_total_faturado_atendimento as
 select 
-case 
+    case 
 		when f.id_atendimento is not null then 'atendimento'
 		when f.id_exame is not null then 'exame'
 		when f.id_internacao is not null then 'internacao'
@@ -1137,7 +1146,8 @@ select * from vw_total_faturado_atendimento;
 
 -- Qual o valor total faturado por por um determinado plano de saúde
 create or replace view vw_total_faturado_plano as
-select ps.nome as plano_saude, sum(f.valor) as valor_total from fatura f
+select ps.nome as plano_saude, sum(f.valor) as valor_total
+from fatura f
 join plano_saude ps on ps.id_plano_saude = f.id_plano_saude
 group by ps.nome;
 
@@ -1145,16 +1155,17 @@ group by ps.nome;
 select * from vw_total_faturado_plano;
 
 -- Use um plano específico, por exemplo:
-
-select ps.nome, sum(f.valor) as total_faturado from fatura f
+select ps.nome, sum(f.valor) as total_faturado
+from fatura f
 join plano_saude ps on f.id_plano_saude = ps.id_plano_saude 
 where lower(ps.nome) = 'unimed'
 group by ps.nome;
 
 
+
+
 ------------------------------------------------------------------------------
 --criação de usuarios:
-
 set role postgres;
 
 --administrador do hospital / gerente geral(acesso total):
@@ -1166,7 +1177,6 @@ create user arnaldo_rocha with password 'medico123';
 --recepcionista (apenas leitura e inserção em pacientes e internações):
 create user recepcionista with password 'recepcao123';
 
-
 --permissoes:
 -- permissões ao administrador / gerente geral:
 grant all privileges on all tables in schema public to admin_hospital;
@@ -1175,9 +1185,9 @@ grant all privileges on all tables in schema public to admin_hospital;
 grant select, insert on atendimento to arnaldo_rocha;
 grant select, insert on prescricao_medicamento to arnaldo_rocha;
 grant select on paciente to arnaldo_rocha;
+
 -- tem que dar permissão de uso e atualização da sequência ao médico
 grant usage, select, update on sequence atendimento_id_atendimento_seq to arnaldo_rocha;
-
 
 -- permissões para recepcionista:
 grant select, insert on paciente to recepcionista;
@@ -1187,7 +1197,6 @@ grant select on leito to recepcionista;
 grant usage, select, update on sequence paciente_id_paciente_seq to recepcionista;
 
 --testes medico:
-
 set role arnaldo_rocha;
 
 --pode fazer:
@@ -1202,7 +1211,6 @@ set role postgres;
 select * from atendimento;
 
 --testes recepcionista:
-
 set role recepcionista;
 
 -- pode fazer:
@@ -1216,4 +1224,3 @@ values (5, 10);
 --visualização no perfil master:
 set role postgres;
 select * from paciente;
-
